@@ -7,6 +7,7 @@ if (process.argv.length <= 2) {
 }
  
 var filePath = process.argv[2];
+var newPath = filePath.substr(0,filePath.lastIndexOf('.')) + ".bl" + filePath.substr(filePath.lastIndexOf('.'));
 
 fs.readFile(filePath, (err, data) => {
   if (err) {
@@ -17,11 +18,13 @@ fs.readFile(filePath, (err, data) => {
       throw err;
     }
   }
-  fs.writeFile(filePath, compile(data.toString()), (err) => {
-	if (err) throw err;
-	console.log('Compilation complited');
+  fs.open(newPath, 'w+', (err, fd) => {
+    if (err) throw err;
+	fs.write(fd, compile(data.toString()), (err) => {
+		if (err) throw err;
+		console.log('Compilation complited');
+	});
   });
-
 });
 
 function compile(str){
